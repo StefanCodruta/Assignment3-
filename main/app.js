@@ -47,7 +47,7 @@ let FoodItem = sequelize.define('foodItem', {
 
 
 const app = express()
-// TODO
+app.use(bodyParser.json())
 
 app.get('/create', async (req, res) => {
     try{
@@ -82,10 +82,44 @@ app.get('/food-items', async (req, res) => {
 app.post('/food-items', async (req, res) => {
     try{
         // TODO
-    }
+        
+        if(req.body.constructor==Object&& Object.keys(req.body).length==0){
+            res.status(400).json({"message": "body is missing"})
+             
+         
+        }else if(req.body.category==null){
+            res.status(400).json({"message": "malformed request"})
+      }else if(req.body.calories==null){
+          res.status(400).json({"message": "malformed request"})}
+       else if(req.body.name==null){
+                res.status(400).json({"message": "malformed request"})
+              
+       }else if (req.body.category.length < 3 || req.body.category.length > 10) {
+
+            res.status(400).json({message: "not a valid category"}); 
+      }
+         else if(req.body.calories<0){
+          res.status(400).json({"message": "calories should be a positive number"})
+          }
+    
+          else if(req.body)
+         {   
+            let fooditem=new FoodItem(req.body)
+           fooditem.save()
+         
+         res.status(201).json({message : 'created'})
+         
+          }
+        
+        }
+
+    
     catch(err){
         // TODO
+        console.warn(err.stack)
+        res.status(500).json({message:'server error'})
     }
+
 })
 
 module.exports = app
